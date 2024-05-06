@@ -28,7 +28,7 @@ export class LoggerConfigService implements OnModuleInit {
     //@ts-expect-error type of the plugin is not compatible with the type of the register method
     await this.adapterHost.httpAdapter.register(loggerPlugin, {
       pinoLogger,
-      ignorePaths: this.loggerModuleOptions.ignorePaths,
+      ...this.loggerModuleOptions,
     });
   }
 

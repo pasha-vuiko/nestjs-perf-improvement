@@ -78,7 +78,11 @@ function getDefaultResLogLevelFactory(
       return 'warn';
     }
 
-    return 'info';
+    if (statusCode >= 500) {
+      return 'error';
+    }
+
+    return 'debug';
   };
 }
 
