@@ -14,6 +14,7 @@ import { LoggerModule } from './shared/modules/logger/logger.module';
     CacheModule.forRoot({
       host: config.cache.redis.host,
       port: config.cache.redis.port,
+      enableAutoPipelining: true,
     }),
   ],
   controllers: [AppController],
