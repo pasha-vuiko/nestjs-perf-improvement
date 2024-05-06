@@ -1,12 +1,15 @@
 import { Logger } from 'nestjs-pino';
 
 import { NestFactory } from '@nestjs/core';
+import { FastifyAdapter } from '@nestjs/platform-fastify';
 
 import { config } from './app.config';
 import { AppModule } from './app.module';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create(AppModule, new FastifyAdapter(), {
+    bufferLogs: true,
+  });
 
   const logger = app.get(Logger);
   app.useLogger(logger);
