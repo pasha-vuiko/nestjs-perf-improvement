@@ -1,5 +1,7 @@
 import path from 'node:path';
 
+import { FastifyServerOptions } from 'fastify';
+
 import { checkEnvVarsSet } from './shared/utils/check-env-vars-set';
 
 checkEnvVarsSet(path.resolve(__dirname, '../.env.example'));
@@ -14,6 +16,15 @@ export const config = {
     logger: {
       level: process.env.LOGGER_LEVEL,
       prettyPrint: process.env.LOG_FORMAT === 'pretty',
+    },
+    fastify: {
+      getConfig: async (): Promise<FastifyServerOptions> => {
+        const { serverFactory } = await import('@geut/fastify-uws');
+
+        return {
+          serverFactory,
+        };
+      },
     },
   },
   cache: {

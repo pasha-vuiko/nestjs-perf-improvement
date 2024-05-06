@@ -6,7 +6,8 @@ import { AppModule } from './app.module';
 import { PinoLogger } from './shared/modules/logger/loggers/pino-logger.service';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, new FastifyAdapter(), {
+  const fastifyConfig = await config.app.fastify.getConfig();
+  const app = await NestFactory.create(AppModule, new FastifyAdapter(fastifyConfig), {
     bufferLogs: true,
   });
 
