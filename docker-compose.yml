@@ -1,0 +1,11 @@
+version: '3.8'
+
+networks:
+  monitoring:
+    driver: bridge
+services:
+  redis:
+    image: redis:7.0.11
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
