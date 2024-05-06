@@ -15,8 +15,31 @@ export class AppController {
   @Cache()
   @Get('/cached')
   getCachedJson(): Record<string, any> {
-    return {
-      hello: 'world',
-    };
+    return [
+      {
+        name: 'John Doe',
+        dateOfBirth: '01/01/1970',
+        email: 'johndo@email.com',
+        address: {
+          street: '123 Main St',
+          city: 'Springfield',
+          state: 'IL',
+          zip: '62701',
+        },
+        roles: ['admin', 'user'],
+      },
+      {
+        name: 'Jane Doe',
+        dateOfBirth: '01/01/1970',
+        email: 'janedo@email.com',
+        address: {
+          street: '123 Main St',
+          city: 'Springfield',
+          state: 'IL',
+          zip: '62701',
+        },
+        roles: ['user'],
+      },
+    ];
   }
 }
