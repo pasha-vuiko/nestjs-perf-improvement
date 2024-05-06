@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 
 import { AppService } from './app.service';
-import { Cache } from './shared/modules/cache/decorators/cache.decorator';
+import { JsonCache } from './shared/modules/cache/decorators/json-cache.decorator';
 
 @Controller()
 export class AppController {
@@ -12,7 +12,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Cache()
+  @JsonCache()
   @Get('/cached')
   getCachedJson(): Record<string, any> {
     return [
