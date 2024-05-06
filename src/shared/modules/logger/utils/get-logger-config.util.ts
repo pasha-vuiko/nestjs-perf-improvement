@@ -1,24 +1,25 @@
-import type { IncomingMessage, ServerResponse } from 'node:http';
-
-import { Request, Response } from 'express';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import pino, { LevelWithSilent } from 'pino';
 
-import { LogFormat } from '../interfaces/logger-options.interface';
+import { ILoggerOptions, LogFormat } from '../interfaces/logger-options.interface';
+import { ISerializedRequest } from '../interfaces/serialized-request.interface';
 import pinoPrettyTransport from './pino-pretty-transport';
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function getDefaultLoggerConfig(logFormat = LogFormat.JSON) {
+export function getDefaultLoggerConfig(
+  level: LevelWithSilent,
+  logFormat = LogFormat.JSON,
+): ILoggerOptions {
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   return {
+    pinoOptions: {
+      level: level,
+    },
     stream:
       logFormat === LogFormat.PRETTY
         ? pinoPrettyTransport()
         : pino.destination({ sync: false }),
-    customLogLevel: function (
-      _req: IncomingMessage,
-      res: ServerResponse,
-    ): LevelWithSilent {
+    customLogLevel: function (_req, res): LevelWithSilent {
       const { statusCode } = res;
 
       if (statusCode >= 400 && statusCode < 500) {
@@ -29,20 +30,16 @@ export function getDefaultLoggerConfig(logFormat = LogFormat.JSON) {
         return 'error';
       }
 
-      if (statusCode >= 300 && statusCode < 400) {
-        return 'info';
-      }
-
       return 'info';
     },
     reqResSerializers: {
-      req: (req: Request) => serializeReq(req),
-      res: (reply: Response) => serializeRes(reply),
+      req: req => serializeReq(req),
+      res: reply => serializeRes(reply),
     },
   };
 }
 
-function serializeReq(req: Request): any {
+function serializeReq(req: FastifyRequest): ISerializedRequest {
   return {
     id: req.id,
     method: req.method,
@@ -52,7 +49,7 @@ function serializeReq(req: Request): any {
   };
 }
 
-function serializeRes(res: Response): any {
+function serializeRes(res: FastifyReply): any {
   return {
     statusCode: res.statusCode,
   };
