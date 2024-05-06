@@ -17,11 +17,8 @@ async function loggerPluginFn(
   fastify: FastifyInstance,
   options: ILoggerPluginOptions,
 ): Promise<void> {
-  const {
-    pinoLogger,
-    reqResSerializers,
-    customLogLevel = getDefaultResLogLevelFactory(options),
-  } = options;
+  const ignorePaths = new Set(options.ignorePaths);
+  const { pinoLogger, reqResSerializers, customLogLevel = defaultResLogLevel } = options;
 
   const {
     req: reqSerializer = defaultReqSerializer,
@@ -35,15 +32,20 @@ async function loggerPluginFn(
   });
 
   fastify.addHook('onResponse', (req, res) => {
+    if (ignorePaths.has(req.url)) {
+      return;
+    }
+
     const serializedReq = reqSerializer(req);
     const serializedRes = resSerializer(res);
 
     const responseLogLevel = customLogLevel(req, res);
 
-    pinoLogger[responseLogLevel](
-      { req: serializedReq, res: serializedRes, responseTime: res.elapsedTime },
-      `request completed`,
-    );
+    pinoLogger[responseLogLevel]({
+      req: serializedReq,
+      res: serializedRes,
+      responseTime: res.elapsedTime,
+    });
   });
 }
 
@@ -62,28 +64,16 @@ function defaultResSerializer(res: FastifyReply): Record<string, any> {
   };
 }
 
-function getDefaultResLogLevelFactory(
-  loggerOptions: ILoggerPluginOptions,
-): TDefaultLevelPredicate {
-  const ignorePaths = new Set(loggerOptions.ignorePaths);
+function defaultResLogLevel(req: FastifyRequest, res: FastifyReply): LogLevel {
+  const { statusCode } = res;
 
-  return (req: FastifyRequest, res: FastifyReply): LogLevel => {
-    const { statusCode } = res;
+  if (statusCode >= 400 && statusCode < 500) {
+    return 'warn';
+  }
 
-    if (ignorePaths.has(req.url)) {
-      return 'silent';
-    }
+  if (statusCode >= 500) {
+    return 'error';
+  }
 
-    if (statusCode >= 400 && statusCode < 500) {
-      return 'warn';
-    }
-
-    if (statusCode >= 500) {
-      return 'error';
-    }
-
-    return 'debug';
-  };
+  return 'debug';
 }
-
-type TDefaultLevelPredicate = (req: FastifyRequest, res: FastifyReply) => LogLevel;

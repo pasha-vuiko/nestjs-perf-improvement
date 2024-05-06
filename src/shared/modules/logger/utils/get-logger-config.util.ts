@@ -9,8 +9,6 @@ export function getDefaultLoggerConfig(
   level: LevelWithSilent,
   logFormat = LogFormat.JSON,
 ): ILoggerOptions {
-  const isDevelopment = process.env.NODE_ENV === 'development';
-
   return {
     pinoOptions: {
       level: level,

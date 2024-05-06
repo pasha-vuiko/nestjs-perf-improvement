@@ -33,16 +33,7 @@ export class LoggerConfigService implements OnModuleInit {
   }
 
   private getPinoLogger(): pino.Logger {
-    const pinoOptions = {
-      ...(this.loggerModuleOptions.pinoOptions
-        ? this.loggerModuleOptions.pinoOptions
-        : {}),
-      mixin(): Record<string, any> {
-        return {
-          reqId: loggerAsyncContext.getStore()?.reqId,
-        };
-      },
-    };
+    const pinoOptions = this.loggerModuleOptions.pinoOptions || {};
 
     if (this.loggerModuleOptions.stream) {
       return pino(pinoOptions, this.loggerModuleOptions.stream);
