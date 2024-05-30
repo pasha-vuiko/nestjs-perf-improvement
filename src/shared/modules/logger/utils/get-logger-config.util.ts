@@ -28,7 +28,7 @@ export function getDefaultLoggerConfig(
         return 'error';
       }
 
-      return 'info';
+      return 'silent';
     },
     reqResSerializers: {
       req: req => serializeReq(req),
