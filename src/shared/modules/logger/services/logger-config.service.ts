@@ -7,7 +7,6 @@ import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { LOGGER_MODULE_OPTIONS } from '../constants/logger-options-provider-token';
 import { loggerPlugin } from '../fastify-plugins/logger-plugin';
 import { ILoggerOptions } from '../interfaces/logger-options.interface';
-import { loggerAsyncContext } from '../utils/logger-async-context';
 
 @Injectable()
 export class LoggerConfigService implements OnModuleInit {

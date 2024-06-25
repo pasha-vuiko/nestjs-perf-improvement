@@ -1,26 +1,18 @@
-import typescriptPlugin from '@typescript-eslint/eslint-plugin';
-import typescriptParser from '@typescript-eslint/parser';
-import prettierPlugin from 'eslint-plugin-prettier';
+import eslint from '@eslint/js';
+import tsEslint from 'typescript-eslint';
+import prettierRecommended from 'eslint-plugin-prettier/recommended';
+import securityPlugin from 'eslint-plugin-security';
 import globals from 'globals';
 
-const prettierRecommended = omitObjKeys(prettierPlugin.configs.recommended, 'extends', 'plugins');
-const typescriptRecommended = {
-  ...omitObjKeys(typescriptPlugin.configs.recommended, 'extends', 'plugins'),
-  plugins: {
-    prettier: prettierPlugin,
-  },
-};
 
 export default [
+  securityPlugin.configs.recommended,
   prettierRecommended,
-  typescriptRecommended,
+  eslint.configs.recommended,
+  ...tsEslint.configs.recommended,
   {
     files: ['**/*.ts'],
-    plugins: {
-      '@typescript-eslint': typescriptPlugin,
-    },
     languageOptions: {
-      parser: typescriptParser,
       parserOptions: {
         project: 'tsconfig.json',
         tsconfigRootDir: import.meta.dirname,
@@ -67,15 +59,3 @@ export default [
     },
   },
 ];
-
-function omitObjKeys(obj, ...keysToOmit) {
-  let result = obj;
-
-  for (const key of keysToOmit) {
-    const { [key]: _, ...tempResult } = result;
-
-    result = tempResult;
-  }
-
-  return result;
-}

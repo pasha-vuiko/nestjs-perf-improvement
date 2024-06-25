@@ -96,7 +96,7 @@ export class InternalPinoLogger implements PinoMethods {
 
   public get logger(): pino.Logger {
     // outOfContext is always set in runtime before starts using
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
     const store = loggerAsyncContext.getStore();
 
     if (!store) {
